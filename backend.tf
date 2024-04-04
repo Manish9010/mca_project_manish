@@ -1,5 +1,5 @@
 # create s3
-
+/*
 resource "aws_s3_bucket" "project_bucket"{
     bucket = "mca-project-bucket"
     versioning {
@@ -13,3 +13,6 @@ resource "aws_s3_bucket" "project_bucket"{
       }
     }
 }
+*/
+
+#once s3 creation is done, needed to avoid from getting destroyed, so have to comment the code block of s3 - which is critical 
