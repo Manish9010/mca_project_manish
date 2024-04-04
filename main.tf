@@ -15,3 +15,5 @@ terraform {
 provider "aws" {
   region = "ap-south-2"
 }
+
+#terraform main entry
