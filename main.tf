@@ -6,7 +6,7 @@ terraform {
   backend "s3" {
     bucket         = "mca-project-bucket"
     key            = "mca-project-statefile.tfstate"
-    region         = var.region
+    region         = "ap-south-2"
    // access_key     = "your_access_key" # Optional if using IAM roles
    // secret_key     = "your_secret_key" # Optional if using IAM roles
    // dynamodb_table = "terraform_locks" # Optional: If you want to enable state locking with DynamoDB
