@@ -1,5 +1,5 @@
 # create s3
-/*
+
 resource "aws_s3_bucket" "project_bucket"{
     bucket = "mca-project-bucket"
     versioning {
@@ -13,4 +13,3 @@ resource "aws_s3_bucket" "project_bucket"{
       }
     }
 }
-*/
