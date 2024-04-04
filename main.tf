@@ -1,7 +1,7 @@
 terraform {
   required_version = ">= 1.5.1"
 }
-/*
+
 terraform {
   backend "s3" {
     bucket         = "mca-project-bucket"
@@ -12,7 +12,7 @@ terraform {
    // dynamodb_table = "terraform_locks" # Optional: If you want to enable state locking with DynamoDB
   }
 }
-*/
+
 terraform {
   required_providers {
     aws = {
