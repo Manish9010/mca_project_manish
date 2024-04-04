@@ -10,8 +10,8 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 script {
-                 //   sh 'terraform init -backend-config="access_key=${AWS_ACCESS_KEY_ID}" -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"'
-                    sh 'terraform init -backend-config="access_key=${AWS_ACCESS_KEY_ID}" -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"  -backend-config "bucket=mca_project_bucket"  -backend-config "key=mca_project_statefile.tfstate"  -backend-config "region=ap-south-2"'  
+                      sh 'terraform init -backend-config="access_key=${AWS_ACCESS_KEY_ID}" -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"'
+                 //   sh 'terraform init -backend-config="access_key=${AWS_ACCESS_KEY_ID}" -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"  -backend-config "bucket=mca_project_bucket"  -backend-config "key=mca_project_statefile.tfstate"  -backend-config "region=ap-south-2"'  
                 }
             }
         }
