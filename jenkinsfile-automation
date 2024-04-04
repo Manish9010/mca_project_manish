@@ -26,8 +26,9 @@ pipeline {
                 script {
                     sh 'ls'
                     sh 'pwd'
+                    sh 'terraform remove aws_s3_bucket.project_bucket'
                 //  sh 'terraform import aws_s3_bucket.project_bucket mca-project-bucket'
-                    sh 'terraform import aws_key_pair.deployer keys'
+                //  sh 'terraform import aws_key_pair.deployer keys'
                     sh 'terraform plan'
                 }
             }
