@@ -11,7 +11,7 @@ resource "aws_vpc" "my_vpc" {
     Name = "My VPC"
   }
 }
-
+# aws
 # Create an internet gateway
 resource "aws_internet_gateway" "my_igw" {
   vpc_id = aws_vpc.my_vpc.id
