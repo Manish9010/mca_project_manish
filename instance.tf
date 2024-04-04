@@ -130,10 +130,10 @@ resource "null_resource" "send_instance_info" {
       # Send instance IP via SMS
       aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic" --message "Instance IP: \$instance_ip" --region "ap-south-2"
     EOT
-
-    interpreter = ["bash", "-c"]
   }
 }
+
+
 
 
 
