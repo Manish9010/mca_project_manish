@@ -27,6 +27,7 @@ pipeline {
                     sh 'ls'
                     sh 'pwd'
                 //  sh 'terraform import aws_s3_bucket.project_bucket mca-project-bucket'
+                    sh 'terraform import aws_key_pair.deployer keys'
                     sh 'terraform plan'
                 }
             }
