@@ -19,6 +19,9 @@ pipeline {
         }
 
         stage('Terraform Plan') {
+            when {
+                expression { !params.destroy }
+            }
             steps {
                 script {
                     sh 'ls'
