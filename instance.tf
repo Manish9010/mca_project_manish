@@ -106,6 +106,40 @@ user_data = <<-EOF
               EOF
 */
   tags = {
-    Name = "Mca_Project_Windows_Server"
+    //  Name = "Mca_Project_Windows_Server"
+    Name = "Mca_Project_Windows_Server-${count.index + 1}"
   }
+}
+
+#-------------------------------------------------------------------
+# Create SNS topics
+resource "aws_sns_topic" "email_topic" {
+  name = "InstanceEmailTopic"
+}
+
+resource "aws_sns_topic" "sms_topic" {
+  name = "InstanceSMSTopic"
+}
+
+# Create email subscription
+resource "aws_sns_topic_subscription" "email_subscription" {
+  topic_arn = aws_sns_topic.email_topic.arn
+  protocol  = "email"
+  endpoint  = "manishgroup.link@gmail.com"
+}
+
+# Create SMS subscription
+resource "aws_sns_topic_subscription" "sms_subscription" {
+  topic_arn = aws_sns_topic.sms_topic.arn
+  protocol  = "sms"
+  endpoint  = "+918247359977" # Phone number to receive SMS notifications
+}
+
+# Output SNS topics ARNs
+output "email_topic_arn" {
+  value = aws_sns_topic.email_topic.arn
+}
+
+output "sms_topic_arn" {
+  value = aws_sns_topic.sms_topic.arn
 }
