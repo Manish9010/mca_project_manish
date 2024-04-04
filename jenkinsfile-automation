@@ -27,12 +27,12 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            script {
-                // Send credentials via email and SMS
-                // Use appropriate plugins or libraries to send emails and SMS
-            }
-        }
-    }
+//    post {
+//        always {
+//            script {
+//                // Send credentials via email and SMS
+//                // Use appropriate plugins or libraries to send emails and SMS
+//            }
+//        }
+//    }
 }
