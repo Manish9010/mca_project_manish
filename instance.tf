@@ -110,6 +110,29 @@ user_data = <<-EOF
     Name = "Mca_Project_Windows_Server-${count.index + 1}"
   }
 }
+#-------------------------------------------------------------------
+
+resource "null_resource" "send_instance_info" {
+  count = length(aws_instance.my_ec2_instance)
+
+  triggers = {
+    instance_id = aws_instance.my_ec2_instance[count.index].id
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      # Retrieve instance IP address
+      instance_ip=$(aws ec2 describe-instances --instance-id ${aws_instance.my_ec2_instance[count.index].id} --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
+      
+      # Send instance IP via email
+      aws sns publish --topic-arn arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic --subject "Instance IP" --message "Instance IP: $instance_ip" --region <your_aws_region>
+      
+      # Send instance IP via SMS
+      aws sns publish --topic-arn arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic --message "Instance IP: $instance_ip" --region <your_aws_region>
+    EOT
+  }
+}
+
 
 #-------------------------------------------------------------------
 # Create SNS topics
