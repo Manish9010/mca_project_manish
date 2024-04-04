@@ -1,6 +1,6 @@
 pipeline {
     agent any
-        parameters {
+    parameters {
         booleanParam(name: 'destroy', defaultValue: false, description: 'Whether to destroy the infrastructure')
     }
     environment {
@@ -13,8 +13,7 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 script {
-                      sh 'terraform init -backend-config="access_key=${AWS_ACCESS_KEY_ID}" -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"'
-                 //   sh 'terraform init -backend-config="access_key=${AWS_ACCESS_KEY_ID}" -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"  -backend-config "bucket=mca_project_bucket"  -backend-config "key=mca_project_statefile.tfstate"  -backend-config "region=ap-south-2"'  
+                    sh 'terraform init -backend-config="access_key=${AWS_ACCESS_KEY_ID}" -backend-config="secret_key=${AWS_SECRET_ACCESS_KEY}"'
                 }
             }
         }
@@ -30,20 +29,34 @@ pipeline {
         }
 
         stage('Terraform Apply') {
+            when {
+                expression { !params.destroy }
+            }
             steps {
                 script {
                     sh 'terraform apply -auto-approve'
                 }
             }
         }
+
+        stage('Terraform Destroy') {
+            when {
+                expression { params.destroy }
+            }
+            steps {
+                script {
+                    sh 'terraform destroy -auto-approve'
+                }
+            }
+        }
     }
 
-//    post {
-//        always {
-//            script {
-//                // Send credentials via email and SMS
-//                // Use appropriate plugins or libraries to send emails and SMS
-//            }
-//        }
-//    }
+    // post {
+    //     always {
+    //         script {
+    //             // Send credentials via email and SMS
+    //             // Use appropriate plugins or libraries to send emails and SMS
+    //         }
+    //     }
+    // }
 }
