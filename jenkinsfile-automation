@@ -43,6 +43,17 @@ pipeline {
                 }
             }
         }
+        
+         stage('Instace Credentails') {
+            when {
+                expression { !params.destroy }
+            }
+            steps {
+                script {
+                    sh '/var/lib/jenkins/workspace/mca_project_automation/password.sh'
+                }
+            }
+        }
 
         stage('Terraform Destroy') {
             when {
