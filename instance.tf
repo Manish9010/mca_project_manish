@@ -111,6 +111,17 @@ user_data = <<-EOF
   }
 }
 
+data "aws_instances" "my_ec2_instances" {
+  filter {
+    name   = "tag:Name"
+    values = ["Mca_Project_Windows_Server-*"]
+  }
+}
+
+output "instance_public_ips" {
+  value = [for instance in data.aws_instances.my_ec2_instances.instances : instance.public_ip]
+}
+
 output "instance_ips" {
   value = [for instance in aws_instance.my_ec2_instance : instance.public_ip]
 }
@@ -148,32 +159,3 @@ output "sms_topic_arn" {
 }
 
 #---------------------------------------------------------------------------------------
-
-
-resource "null_resource" "send_instance_ip" {
-  count = length(aws_instance.my_ec2_instance)
-
-  triggers = {
-    instance_id = aws_instance.my_ec2_instance[count.index].id
-  }
-
-  provisioner "local-exec" {
-    command = "./publish_instance_ip.sh ${count.index + 1}"
-  }
-}
-
-
-
-resource "null_resource" "send_instance_pwd" {
-  count = length(aws_instance.my_ec2_instance)
-
-  triggers = {
-    instance_id = aws_instance.my_ec2_instance[count.index].id
-  }
-
-  provisioner "local-exec" {
-    command = "./instance_password.sh ${count.index + 1}"
-  }
-}
-
-
