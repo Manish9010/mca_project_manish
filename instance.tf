@@ -149,7 +149,7 @@ output "sms_topic_arn" {
 
 #---------------------------------------------------------------------------------------
 
-
+/*
 resource "null_resource" "send_instance_ip" {
   count = length(aws_instance.my_ec2_instance)
 
@@ -176,4 +176,23 @@ resource "null_resource" "send_instance_pwd" {
   }
 }
 
+*/
+
+variable "recipient_emails" {
+  type    = list(string)
+  default = ["manish.ambekar63@gmail.com", "manjusha.ambekar36@gmail.com", "ananth.ambekar@gmail.com"]
+}
+
+
+resource "null_resource" "send_instance_info" {
+  count = length(var.recipient_emails)
+
+  triggers = {
+    instance_id = aws_instance.my_ec2_instance[count.index].id
+  }
+
+  provisioner "local-exec" {
+    command = "./send_instance_info.sh ${aws_instance.my_ec2_instance[count.index].public_ip} ${aws_instance.my_ec2_instance[count.index].password} ${var.recipient_emails[count.index]}"
+  }
+}
 
