@@ -150,6 +150,7 @@ variable "email_addresses" {
   default = ["manish.ambekar36@gmail.com", "manish.ambekar63@gmail.com", "ananth.ambekar@gmail.com"]
 }
 
+
 # Create SNS topics
 resource "aws_sns_topic" "email_topic" {
   name = "InstanceEmailTopic"
@@ -175,11 +176,11 @@ resource "null_resource" "send_instance_ips" {
   }
 
   provisioner "local-exec" {
-    command = <<-EOT
+    command = <<EOT
       #!/bin/bash
       instance_ips=($(aws ec2 describe-instances --instance-ids ${join(" ", aws_instance.my_ec2_instance[*].id)} --query 'Reservations[*].Instances[*].PublicIpAddress' --output text))
       for ((i=0; i<${length(var.email_addresses)}; i++)); do
-        echo "IP address of instance $((i+1)): \${instance_ips[i]}" | mail -s "Instance IP" "${var.email_addresses[i]}"
+        echo "IP address of instance $((i+1)): ${instance_ips[i]}" | mail -s "Instance IP" "${var.email_addresses[i]}"
       done
     EOT
   }
