@@ -89,9 +89,15 @@ resource "aws_key_pair" "deployer" {
   key_name   = "keys"
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCnfvYW3Ce90dxCVKRG+v7psprtDYVm/CvZ1Lv9kQxJQbCJBV6kq8tO3Joagaeb6f5BVJyW0AYZzplUpNnjJNjkrv24HzIoI9VktgoNXTxLXmI86yzhd9S/q9AG1xb73yoWmUDDLEnqnABqPJShPtoK6RLDhvFUE+p0IOL/mOOI5nHvFNpcI/cMkybShoFIW2luI7uFH73QwT2GpcMJoQS8639wVG2VsCUfkx8UhClgqyE7yvmqtgSWnWkLMaFM+WpZpz94sjSEhw/NX4oVmR3BRF4GZJcM1qwpv3BWDcSnP8OZ1L1HiJEggSC8Fa5MWwQbxoWJoaFbIRi5R0VW14qPYdpjNIYlukyaZKqjf+Wg+i1L9SQo5nULwQCxdVRZgwuXZ18LBlDBpGDMQrYmHWNnIvdlUySUosQGRUzDc9iOQ1+XwUiUJhJI1JDrHdZffs+XkwfrzigyBZMl9/Wxec9nIl91d00LnW+vY366gCh38LAtenk4Bp2ZQa/08/GxYts= manish@Manish"
 }
+
+variable "instance_names" {
+  type    = list(string)
+  default = ["mcaprojectserver1", "mcaprojectserver2", "mcaprojectserver3"]
+}
+
 # Create an EC2 instance
 resource "aws_instance" "my_ec2_instance" {
-  count = 3
+  for_each = toset(var.instance_names)
   ami           = "ami-0bd7b4edb1385fd36" # This is an example AMI ID, replace it with the AMI ID for your region
   instance_type = "t3.micro"
   key_name      = "keys" # Replace this with your key pair name
@@ -107,18 +113,17 @@ user_data = <<-EOF
               </powershell>
               EOF
 */
-  tags = {
-    //  Name = "Mca_Project_Windows_Server"
-    Name = "Mca_Project_Windows_Server-${count.index + 1}"
+   tags = {
+    Name = each.value
   }
 }
 
 output "instance_public_ip" {
-  value = aws_instance.my_ec2_instance[count.index].public_ip
+  value = aws_instance.my_ec2_instance[each.key].public_ip
 }
 
 output "administrator_password" {
-  value = rsadecrypt(aws_instance.my_ec2_instance[count.index].password_data, file("keys.pem"))
+  value = rsadecrypt(aws_instance.my_ec2_instance[each.key].password_data, file("keys.pem"))
 }
 
 /*
