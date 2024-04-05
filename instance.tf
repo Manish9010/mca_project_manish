@@ -111,17 +111,6 @@ user_data = <<-EOF
   }
 }
 
-data "aws_instances" "my_ec2_instances" {
-  filter {
-    name   = "tag:Name"
-    values = ["Mca_Project_Windows_Server-*"]
-  }
-}
-
-output "instance_public_ips" {
-  value = [for instance in data.aws_instances.my_ec2_instances.instances : instance.public_ip]
-}
-
 output "instance_ips" {
   value = [for instance in aws_instance.my_ec2_instance : instance.public_ip]
 }
