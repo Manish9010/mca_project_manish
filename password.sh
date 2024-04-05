@@ -13,9 +13,11 @@ for instance_id in "${instance_ids[@]}"; do
 
     # Extract the password from the JSON output
     password=$(echo "$password_data" | jq -r '.PasswordData')
+    public_ip=$(aws ec2 describe-instances --instance-ids "$instance_id" --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
 
     # Print the instance ID and password
     echo "Instance ID: $instance_id"
     echo "Password: $password"
+    echo "Public IP: $public_ip"
     echo "------------------------------------------"
 done
