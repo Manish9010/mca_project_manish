@@ -1,8 +1,15 @@
 #!/bin/bash
 
 #instance_ids=("i-090d1cc887c8a5c9b" "i-0dcb9eabdaa19169d" "i-041912a89df35baaf")
-instance_ids=$(terraform output -json instance_ids | jq -r '[]')
+#instance_ids=$(terraform output -json instance_ids | jq -r '[]')
+# Get the instance IDs from Terraform
+instance_ids_json=$(terraform output -json instance_ids)
+instance_ids=()
 
+# Parse the JSON array and add each instance ID to the Bash array
+for instance_id in $(echo $instance_ids_json | jq -r '.[]'); do
+    instance_ids+=("$instance_id")
+done
 # Path to the private key file
 private_key="keys.pem"
 
