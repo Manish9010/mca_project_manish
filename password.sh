@@ -1,10 +1,9 @@
 #!/bin/bash
 
 # Get the instance IDs from Terraform
-instance_ids_json=$(terraform output -json instance_ids)
-
+instance_ids=$(terraform output -json instance_ids | jq -r '[]')
 # Parse the JSON and convert it to an array
-IFS=$'\n' read -rd '' -a instance_ids <<< "$instance_ids_json"
+#IFS=$'\n' read -rd '' -a instance_ids <<< "$instance_ids_json"
 
 # Array containing the instance IDs
 #instance_ids=("i-090d1cc887c8a5c9b" "i-0dcb9eabdaa19169d" "i-041912a89df35baaf")
