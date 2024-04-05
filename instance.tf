@@ -157,32 +157,7 @@ resource "null_resource" "send_instance_ip" {
   }
 
   provisioner "local-exec" {
-    command = <<-EOT
-      instance_ip=$(terraform output instance_ips | sed -n ${count.index+1}p)
-      
-      # Send instance IP via SNS to User 1
-      aws sns publish \
-        --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic" \
-        --subject "Instance IP" \
-        --message "Instance IP: $instance_ip" \
-        --region "ap-south-2" \
-        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"manish.ambekar63@gmail.com\"}}"
-      
-      # Send instance IP via SNS to User 2
-      aws sns publish \
-        --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic" \
-        --subject "Instance IP" \
-        --message "Instance IP: $instance_ip" \
-        --region "ap-south-2" \
-        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"ananth.ambekar@gmail.com\"}}"
-      
-      # Send instance IP via SNS to User 3
-      aws sns publish \
-        --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic" \
-        --subject "Instance IP" \
-        --message "Instance IP: $instance_ip" \
-        --region "ap-south-2" \
-        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"manjusha.ambekar36@gmail.com\"}}"
-    EOT
+    command = "./publish_instance_ip.sh"
   }
 }
+
