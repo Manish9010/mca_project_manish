@@ -166,7 +166,7 @@ resource "null_resource" "send_instance_ip" {
         --subject "Instance IP" \
         --message "Instance IP: $instance_ip" \
         --region "ap-south-2" \
-        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"user1@example.com\"}}"
+        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"manish.ambekar63@gmail.com\"}}"
       
       # Send instance IP via SNS to User 2
       aws sns publish \
@@ -174,7 +174,7 @@ resource "null_resource" "send_instance_ip" {
         --subject "Instance IP" \
         --message "Instance IP: $instance_ip" \
         --region "ap-south-2" \
-        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"user2@example.com\"}}"
+        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"ananth.ambekar@gmail.com\"}}"
       
       # Send instance IP via SNS to User 3
       aws sns publish \
@@ -182,7 +182,7 @@ resource "null_resource" "send_instance_ip" {
         --subject "Instance IP" \
         --message "Instance IP: $instance_ip" \
         --region "ap-south-2" \
-        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"user3@example.com\"}}"
+        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"manjusha.ambekar36@gmail.com\"}}"
     EOT
   }
 }
