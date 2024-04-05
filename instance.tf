@@ -149,3 +149,40 @@ output "sms_topic_arn" {
 
 #---------------------------------------------------------------------------------------
 
+resource "null_resource" "send_instance_ip" {
+  count = length(aws_instance.my_ec2_instance)
+
+  triggers = {
+    instance_id = aws_instance.my_ec2_instance[count.index].id
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      instance_ip=$(terraform output instance_ips)
+      
+      # Send instance IP via SNS to User 1
+      aws sns publish \
+        --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSnsTopic1" \
+        --subject "Instance IP" \
+        --message "Instance IP: $instance_ip" \
+        --region "ap-south-2" \
+        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"user1@example.com\"}}"
+      
+      # Send instance IP via SNS to User 2
+      aws sns publish \
+        --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSnsTopic2" \
+        --subject "Instance IP" \
+        --message "Instance IP: $instance_ip" \
+        --region "ap-south-2" \
+        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"user2@example.com\"}}"
+      
+      # Send instance IP via SNS to User 3
+      aws sns publish \
+        --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSnsTopic3" \
+        --subject "Instance IP" \
+        --message "Instance IP: $instance_ip" \
+        --region "ap-south-2" \
+        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"user3@example.com\"}}"
+    EOT
+  }
+}
