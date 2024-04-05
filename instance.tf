@@ -89,23 +89,15 @@ resource "aws_key_pair" "deployer" {
   key_name   = "keys"
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCnfvYW3Ce90dxCVKRG+v7psprtDYVm/CvZ1Lv9kQxJQbCJBV6kq8tO3Joagaeb6f5BVJyW0AYZzplUpNnjJNjkrv24HzIoI9VktgoNXTxLXmI86yzhd9S/q9AG1xb73yoWmUDDLEnqnABqPJShPtoK6RLDhvFUE+p0IOL/mOOI5nHvFNpcI/cMkybShoFIW2luI7uFH73QwT2GpcMJoQS8639wVG2VsCUfkx8UhClgqyE7yvmqtgSWnWkLMaFM+WpZpz94sjSEhw/NX4oVmR3BRF4GZJcM1qwpv3BWDcSnP8OZ1L1HiJEggSC8Fa5MWwQbxoWJoaFbIRi5R0VW14qPYdpjNIYlukyaZKqjf+Wg+i1L9SQo5nULwQCxdVRZgwuXZ18LBlDBpGDMQrYmHWNnIvdlUySUosQGRUzDc9iOQ1+XwUiUJhJI1JDrHdZffs+XkwfrzigyBZMl9/Wxec9nIl91d00LnW+vY366gCh38LAtenk4Bp2ZQa/08/GxYts= manish@Manish"
 }
-
-variable "instance_names" {
-  type    = list(string)
-  default = ["mcaprojectserver1", "mcaprojectserver2", "mcaprojectserver3"]
-}
-
 # Create an EC2 instance
 resource "aws_instance" "my_ec2_instance" {
-  for_each = toset(var.instance_names)
+  count = 3
   ami           = "ami-0bd7b4edb1385fd36" # This is an example AMI ID, replace it with the AMI ID for your region
   instance_type = "t3.micro"
   key_name      = "keys" # Replace this with your key pair name
   subnet_id     = aws_subnet.my_subnet.id
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
   associate_public_ip_address = true # Ensure automatic public IP assignment
-
-  get_password_data = true
 /*
 user_data = <<-EOF
               <powershell>
@@ -113,25 +105,15 @@ user_data = <<-EOF
               </powershell>
               EOF
 */
-   tags = {
-    Name = each.value
+  tags = {
+    //  Name = "Mca_Project_Windows_Server"
+    Name = "Mca_Project_Windows_Server-${count.index + 1}"
   }
 }
 
-output "instance_public_ip" {
-  value = aws_instance.my_ec2_instance[aws_instance.my_ec2_instance.keys()[0]].public_ip
-}
-
-output "administrator_password" {
-  value = rsadecrypt(aws_instance.my_ec2_instance[aws_instance.my_ec2_instance.keys()[0]].password_data, file("keys.pem"))
-}
-
-/*
 output "instance_ips" {
   value = [for instance in aws_instance.my_ec2_instance : instance.public_ip]
 }
-*/
-
 #-------------------------------------------------------------------
 # Create SNS topics
 resource "aws_sns_topic" "email_topic" {
@@ -149,14 +131,12 @@ resource "aws_sns_topic_subscription" "email_subscription" {
   endpoint  = "manishgroup.link@gmail.com"
 }
 
-/*
 # Create SMS subscription
 resource "aws_sns_topic_subscription" "sms_subscription" {
   topic_arn = aws_sns_topic.sms_topic.arn
   protocol  = "sms"
   endpoint  = "+918247359977" # Phone number to receive SMS notifications
 }
-*/
 
 # Output SNS topics ARNs
 output "email_topic_arn" {
@@ -169,5 +149,31 @@ output "sms_topic_arn" {
 
 #---------------------------------------------------------------------------------------
 
+
+resource "null_resource" "send_instance_ip" {
+  count = length(aws_instance.my_ec2_instance)
+
+  triggers = {
+    instance_id = aws_instance.my_ec2_instance[count.index].id
+  }
+
+  provisioner "local-exec" {
+    command = "./publish_instance_ip.sh ${count.index + 1}"
+  }
+}
+
+
+
+resource "null_resource" "send_instance_pwd" {
+  count = length(aws_instance.my_ec2_instance)
+
+  triggers = {
+    instance_id = aws_instance.my_ec2_instance[count.index].id
+  }
+
+  provisioner "local-exec" {
+    command = "./instance_password.sh ${count.index + 1}"
+  }
+}
 
 
