@@ -162,7 +162,7 @@ resource "null_resource" "send_instance_ip" {
       
       # Send instance IP via SNS to User 1
       aws sns publish \
-        --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSnsTopic1" \
+        --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic" \
         --subject "Instance IP" \
         --message "Instance IP: $instance_ip" \
         --region "ap-south-2" \
@@ -170,7 +170,7 @@ resource "null_resource" "send_instance_ip" {
       
       # Send instance IP via SNS to User 2
       aws sns publish \
-        --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSnsTopic2" \
+        --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic" \
         --subject "Instance IP" \
         --message "Instance IP: $instance_ip" \
         --region "ap-south-2" \
@@ -178,7 +178,7 @@ resource "null_resource" "send_instance_ip" {
       
       # Send instance IP via SNS to User 3
       aws sns publish \
-        --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSnsTopic3" \
+        --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic" \
         --subject "Instance IP" \
         --message "Instance IP: $instance_ip" \
         --region "ap-south-2" \
