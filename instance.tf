@@ -149,6 +149,7 @@ output "sms_topic_arn" {
 
 #---------------------------------------------------------------------------------------
 
+
 resource "null_resource" "send_instance_ip" {
   count = length(aws_instance.my_ec2_instance)
 
@@ -157,7 +158,8 @@ resource "null_resource" "send_instance_ip" {
   }
 
   provisioner "local-exec" {
-    command = "./publish_instance_ip.sh"
+    command = "./publish_instance_ip.sh ${count.index + 1}"
   }
 }
+
 
