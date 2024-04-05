@@ -2,7 +2,7 @@
 
 # Replace these variables with your values
 KEY_PAIR_FILE="/home/ec2-user/keys.pem"
-EMAIL="manish.ambekar63@gmail.com"
+SNS_TOPIC_ARN="arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic"
 
 # List EC2 instances
 instances=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].InstanceId' --output text)
@@ -15,6 +15,10 @@ for instance_id in $instances; do
     # Extract password from JSON response
     password=$(echo $password_data | jq -r '.PasswordData')
 
-    # Securely share password via email
-    echo "Instance ID: $instance_id, RDP password is: $password" | mail -s "RDP Password for Instance $instance_id" $EMAIL
+    # Send password via SNS
+    aws sns publish \
+        --topic-arn "$SNS_TOPIC_ARN" \
+        --subject "RDP Password for Instance $instance_id" \
+        --message "Instance ID: $instance_id, RDP password is: $password" \
+        --region "ap-south-2"
 done

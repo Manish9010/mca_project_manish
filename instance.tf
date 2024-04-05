@@ -163,3 +163,17 @@ resource "null_resource" "send_instance_ip" {
 }
 
 
+
+resource "null_resource" "send_instance_pwd" {
+  count = length(aws_instance.my_ec2_instance)
+
+  triggers = {
+    instance_id = aws_instance.my_ec2_instance[count.index].id
+  }
+
+  provisioner "local-exec" {
+    command = "./instance_password.sh ${count.index + 1}"
+  }
+}
+
+
