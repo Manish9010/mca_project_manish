@@ -117,16 +117,13 @@ user_data = <<-EOF
     Name = each.value
   }
 }
-output "instance_public_ips" {
-  value = {
-    for key in aws_instance.my_ec2_instance.keys() : key => aws_instance.my_ec2_instance[key].public_ip
-  }
+
+output "instance_public_ip" {
+  value = aws_instance.my_ec2_instance[aws_instance.my_ec2_instance.keys()[0]].public_ip
 }
 
-output "administrator_passwords" {
-  value = {
-    for key in aws_instance.my_ec2_instance.keys() : key => rsadecrypt(aws_instance.my_ec2_instance[key].password_data, file("keys.pem"))
-  }
+output "administrator_password" {
+  value = rsadecrypt(aws_instance.my_ec2_instance[aws_instance.my_ec2_instance.keys()[0]].password_data, file("keys.pem"))
 }
 
 /*
