@@ -110,6 +110,10 @@ user_data = <<-EOF
     Name = "Mca_Project_Windows_Server-${count.index + 1}"
   }
 }
+
+output "instance_ips" {
+  value = [for instance in aws_instance.my_ec2_instance : instance.public_ip]
+}
 #-------------------------------------------------------------------
 # Create SNS topics
 resource "aws_sns_topic" "email_topic" {
