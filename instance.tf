@@ -183,16 +183,28 @@ variable "recipient_emails" {
   default = ["manish.ambekar63@gmail.com", "manjusha.ambekar36@gmail.com", "ananth.ambekar@gmail.com"]
 }
 
-
-resource "null_resource" "send_instance_info" {
-  count = length(var.recipient_emails)
-
-  triggers = {
-    instance_id = aws_instance.my_ec2_instance[count.index].id
-  }
-
+resource "null_resource" "send_instance_passwords" {
   provisioner "local-exec" {
-    command = "./send_instance_info.sh ${aws_instance.my_ec2_instance[count.index].public_ip} ${aws_instance.my_ec2_instance[count.index].password} ${var.recipient_emails[count.index]}"
+    command = <<-EOT
+      #!/bin/bash
+
+      KEY_PAIR_FILE="/home/ec2-user/keys.pem"
+      SNS_TOPIC_ARN="arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic"
+
+      instances=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].InstanceId' --output text)
+
+      for instance_id in $instances; do
+          password_data=$(aws ec2 get-password-data --instance-id $instance_id --priv-launch-key $KEY_PAIR_FILE)
+          password=$(echo $password_data | jq -r '.PasswordData')
+
+          aws sns publish \
+              --topic-arn "$SNS_TOPIC_ARN" \
+              --subject "RDP Password for Instance $instance_id" \
+              --message "Instance ID: $instance_id, RDP password is: $password" \
+              --region "ap-south-2"
+      done
+    EOT
   }
 }
+
 
