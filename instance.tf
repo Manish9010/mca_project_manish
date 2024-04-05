@@ -120,15 +120,22 @@ resource "aws_sns_topic" "email_topic" {
   name = "InstanceEmailTopic"
 }
 
-resource "aws_sns_topic" "sms_topic" {
-  name = "InstanceSMSTopic"
-}
-
 # Create email subscription
 resource "aws_sns_topic_subscription" "email_subscription" {
   topic_arn = aws_sns_topic.email_topic.arn
   protocol  = "email"
   endpoint  = "manishgroup.link@gmail.com"
+}
+
+# Output SNS topics ARNs
+output "email_topic_arn" {
+  value = aws_sns_topic.email_topic.arn
+}
+
+
+/*
+resource "aws_sns_topic" "sms_topic" {
+  name = "InstanceSMSTopic"
 }
 
 # Create SMS subscription
@@ -138,13 +145,9 @@ resource "aws_sns_topic_subscription" "sms_subscription" {
   endpoint  = "+918247359977" # Phone number to receive SMS notifications
 }
 
-# Output SNS topics ARNs
-output "email_topic_arn" {
-  value = aws_sns_topic.email_topic.arn
-}
-
 output "sms_topic_arn" {
   value = aws_sns_topic.sms_topic.arn
 }
 
-#---------------------------------------------------------------------------------------
+
+*/
