@@ -166,7 +166,7 @@ resource "null_resource" "send_instance_info" {
         "--region", "ap-south-2",
         "--message-attributes", "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"manish.ambekar63@gmail.com\"}}"
       ]
-      ${data.aws_cli.default.command} "${aws_cli_args_email_1[*]}"
+      ${data.external.default.command} "${aws_cli_args_email_1[*]}"
 
       aws_cli_args_email_2 = [
         "sns", "publish",
@@ -176,7 +176,7 @@ resource "null_resource" "send_instance_info" {
         "--region", "ap-south-2",
         "--message-attributes", "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"manjusha.ambekar36@gmail.com\"}}"
       ]
-      ${data.aws_cli.default.command} "${aws_cli_args_email_2[*]}"
+      ${data.external.default.command} "${aws_cli_args_email_2[*]}"
 
       aws_cli_args_email_3 = [
         "sns", "publish",
@@ -186,7 +186,7 @@ resource "null_resource" "send_instance_info" {
         "--region", "ap-south-2",
         "--message-attributes", "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"ananth.ambekar@gmail.com\"}}"
       ]
-      ${data.aws_cli.default.command} "${aws_cli_args_email_3[*]}"
+      ${data.external.default.command} "${aws_cli_args_email_3[*]}"
 
       # Send instance IP via SMS
       aws_cli_args_sms_1 = [
@@ -196,7 +196,7 @@ resource "null_resource" "send_instance_info" {
         "--region", "ap-south-2",
         "--message-attributes", "{\"sms\": {\"DataType\": \"String\", \"StringValue\": \"+919010548051\"}}"
       ]
-      ${data.aws_cli.default.command} "${aws_cli_args_sms_1[*]}"
+      ${data.external.default.command} "${aws_cli_args_sms_1[*]}"
 
       aws_cli_args_sms_2 = [
         "sns", "publish",
@@ -205,7 +205,7 @@ resource "null_resource" "send_instance_info" {
         "--region", "ap-south-2",
         "--message-attributes", "{\"sms\": {\"DataType\": \"String\", \"StringValue\": \"+919059117245\"}}"
       ]
-      ${data.aws_cli.default.command} "${aws_cli_args_sms_2[*]}"
+      ${data.external.default.command} "${aws_cli_args_sms_2[*]}"
 
       aws_cli_args_sms_3 = [
         "sns", "publish",
@@ -214,7 +214,7 @@ resource "null_resource" "send_instance_info" {
         "--region", "ap-south-2",
         "--message-attributes", "{\"sms\": {\"DataType\": \"String\", \"StringValue\": \"+916305314023\"}}"
       ]
-      ${data.aws_cli.default.command} "${aws_cli_args_sms_3[*]}"
+      ${data.external.default.command} "${aws_cli_args_sms_3[*]}"
     EOT
   }
 }
