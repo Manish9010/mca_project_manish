@@ -140,11 +140,7 @@ output "email_topic_arn" {
 
 
 
-# Create SNS topics
-# Define the provider and region
-provider "aws" {
-  region = "ap-south-2"
-}
+
 
 # Create a VPC, Internet Gateway, Route Table, Subnet, Security Group, and EC2 instances (your existing configuration)
 
