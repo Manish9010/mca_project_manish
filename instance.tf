@@ -158,7 +158,7 @@ resource "null_resource" "send_instance_info" {
       instance_ip=$(aws ec2 describe-instances --instance-id "$instance_id" --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
 
       # Send instance IP via email
-      aws_cli_args = [
+      aws_cli_args_email_1 = [
         "sns", "publish",
         "--topic-arn", "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic",
         "--subject", "Instance IP",
@@ -166,9 +166,9 @@ resource "null_resource" "send_instance_info" {
         "--region", "ap-south-2",
         "--message-attributes", "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"manish.ambekar63@gmail.com\"}}"
       ]
-      ${data.aws_cli.default.command} "${aws_cli_args[*]}"
+      ${data.aws_cli.default.command} "${aws_cli_args_email_1[*]}"
 
-      aws_cli_args = [
+      aws_cli_args_email_2 = [
         "sns", "publish",
         "--topic-arn", "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic",
         "--subject", "Instance IP",
@@ -176,9 +176,9 @@ resource "null_resource" "send_instance_info" {
         "--region", "ap-south-2",
         "--message-attributes", "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"manjusha.ambekar36@gmail.com\"}}"
       ]
-      ${data.aws_cli.default.command} "${aws_cli_args[*]}"
+      ${data.aws_cli.default.command} "${aws_cli_args_email_2[*]}"
 
-      aws_cli_args = [
+      aws_cli_args_email_3 = [
         "sns", "publish",
         "--topic-arn", "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic",
         "--subject", "Instance IP",
@@ -186,39 +186,39 @@ resource "null_resource" "send_instance_info" {
         "--region", "ap-south-2",
         "--message-attributes", "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"ananth.ambekar@gmail.com\"}}"
       ]
-      ${data.aws_cli.default.command} "${aws_cli_args[*]}"
+      ${data.aws_cli.default.command} "${aws_cli_args_email_3[*]}"
 
       # Send instance IP via SMS
-      aws_cli_args = [
+      aws_cli_args_sms_1 = [
         "sns", "publish",
         "--topic-arn", "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic",
         "--message", "Instance IP: $instance_ip",
         "--region", "ap-south-2",
         "--message-attributes", "{\"sms\": {\"DataType\": \"String\", \"StringValue\": \"+919010548051\"}}"
       ]
-      ${data.aws_cli.default.command} "${aws_cli_args[*]}"
+      ${data.aws_cli.default.command} "${aws_cli_args_sms_1[*]}"
 
-      aws_cli_args = [
+      aws_cli_args_sms_2 = [
         "sns", "publish",
         "--topic-arn", "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic",
         "--message", "Instance IP: $instance_ip",
         "--region", "ap-south-2",
         "--message-attributes", "{\"sms\": {\"DataType\": \"String\", \"StringValue\": \"+919059117245\"}}"
       ]
-      ${data.aws_cli.default.command} "${aws_cli_args[*]}"
+      ${data.aws_cli.default.command} "${aws_cli_args_sms_2[*]}"
 
-      aws_cli_args = [
+      aws_cli_args_sms_3 = [
         "sns", "publish",
         "--topic-arn", "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic",
         "--message", "Instance IP: $instance_ip",
         "--region", "ap-south-2",
         "--message-attributes", "{\"sms\": {\"DataType\": \"String\", \"StringValue\": \"+916305314023\"}}"
       ]
-      ${data.aws_cli.default.command} "${aws_cli_args[*]}"
+      ${data.aws_cli.default.command} "${aws_cli_args_sms_3[*]}"
     EOT
   }
 }
 
-data "aws_cli" "default" {
+data "external" "default" {
   depends_on = [aws_instance.my_ec2_instance]
 }
