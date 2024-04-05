@@ -1,6 +1,7 @@
 #!/bin/bash
 
-instance_ids=("i-090d1cc887c8a5c9b" "i-0dcb9eabdaa19169d" "i-041912a89df35baaf")
+#instance_ids=("i-090d1cc887c8a5c9b" "i-0dcb9eabdaa19169d" "i-041912a89df35baaf")
+instance_ids=$(terraform output -json instance_ids | jq -r '[]')
 
 # Path to the private key file
 private_key="keys.pem"
