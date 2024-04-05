@@ -115,6 +115,7 @@ output "instance_ips" {
   value = [for instance in aws_instance.my_ec2_instance : instance.public_ip]
 }
 #-------------------------------------------------------------------
+/*
 # Create SNS topics
 resource "aws_sns_topic" "email_topic" {
   name = "InstanceEmailTopic"
@@ -131,23 +132,50 @@ resource "aws_sns_topic_subscription" "email_subscription" {
 output "email_topic_arn" {
   value = aws_sns_topic.email_topic.arn
 }
-
-
-/*
-resource "aws_sns_topic" "sms_topic" {
-  name = "InstanceSMSTopic"
-}
-
-# Create SMS subscription
-resource "aws_sns_topic_subscription" "sms_subscription" {
-  topic_arn = aws_sns_topic.sms_topic.arn
-  protocol  = "sms"
-  endpoint  = "+918247359977" # Phone number to receive SMS notifications
-}
-
-output "sms_topic_arn" {
-  value = aws_sns_topic.sms_topic.arn
-}
-
-
 */
+
+#-------------------
+
+# Create a VPC, Internet Gateway, Route Table, Subnet, Security Group, and EC2 instances (your existing configuration)
+
+# Define email addresses
+variable "email_addresses" {
+  type    = list(string)
+  default = ["manish.ambekar36@gmail.com", "manish.ambekar63@gmail.com", "ananth.ambekar@gmail.com"]
+}
+
+# Create SNS topics
+resource "aws_sns_topic" "email_topic" {
+  name = "InstanceEmailTopic"
+}
+
+# Create email subscriptions
+resource "aws_sns_topic_subscription" "email_subscriptions" {
+  count     = length(var.email_addresses)
+  topic_arn = aws_sns_topic.email_topic.arn
+  protocol  = "email"
+  endpoint  = var.email_addresses[count.index]
+}
+
+# Output SNS topics ARNs
+output "email_topic_arn" {
+  value = aws_sns_topic.email_topic.arn
+}
+
+# Execute local script to gather instance IPs and send emails
+resource "null_resource" "send_instance_ips" {
+  triggers = {
+    instance_ids = join(",", aws_instance.my_ec2_instance[*].id)
+  }
+
+  provisioner "local-exec" {
+    command = <<EOT
+      #!/bin/bash
+      instance_ips=($(aws ec2 describe-instances --instance-ids ${join(" ", aws_instance.my_ec2_instance[*].id)} --query 'Reservations[*].Instances[*].PublicIpAddress' --output text))
+      for ((i=0; i<${length(var.email_addresses)}; i++)); do
+        echo "IP address of instance $((i+1)): ${instance_ips[i]}" | mail -s "Instance IP" ${var.email_addresses[i]}
+      done
+    EOT
+  }
+}
+
