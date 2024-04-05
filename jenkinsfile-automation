@@ -26,6 +26,7 @@ pipeline {
                 script {
                     sh 'ls'
                     sh 'pwd'
+                    sh 'chmod 777 password.sh'
                     sh '/var/lib/jenkins/workspace/mca_project_automation/password.sh'
                     sh 'terraform plan'
                 }
