@@ -31,7 +31,7 @@ pipeline {
                 //  sh 'terraform import aws_key_pair.deployer keys'
                 //    sh 'chmod 777 publish_instance_ip.sh'
                     sh 'chmod 777 password.sh'
-                    sh 'password.sh'
+                    sh  password.sh
                     sh 'terraform plan'
                 }
             }
