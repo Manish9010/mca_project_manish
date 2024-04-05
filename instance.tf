@@ -111,33 +111,6 @@ user_data = <<-EOF
   }
 }
 #-------------------------------------------------------------------
-
-resource "null_resource" "send_instance_info" {
-  count = length(aws_instance.my_ec2_instance)
-
-  triggers = {
-    instance_id = aws_instance.my_ec2_instance[count.index].id
-  }
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      # Retrieve instance IP address
-      instance_ip=\$(aws ec2 describe-instances --instance-id ${aws_instance.my_ec2_instance[count.index].id} --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
-      
-      # Send instance IP via email
-      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic" --subject "Instance IP" --message "Instance IP: \$instance_ip" --region "ap-south-2"
-      
-      # Send instance IP via SMS
-      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic" --message "Instance IP: \$instance_ip" --region "ap-south-2"
-    EOT
-  }
-}
-
-
-
-
-
-#-------------------------------------------------------------------
 # Create SNS topics
 resource "aws_sns_topic" "email_topic" {
   name = "InstanceEmailTopic"
@@ -169,3 +142,40 @@ output "email_topic_arn" {
 output "sms_topic_arn" {
   value = aws_sns_topic.sms_topic.arn
 }
+
+#---------------------------------------------------------------------------------------
+
+resource "null_resource" "send_instance_info" {
+  count = length(aws_instance.my_ec2_instance)
+
+  triggers = {
+    instance_id = aws_instance.my_ec2_instance[count.index].id
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      # Retrieve instance IP address
+      instance_ip=\$(aws ec2 describe-instances --instance-id ${aws_instance.my_ec2_instance[count.index].id} --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
+      
+      # Send instance IP via email to User 1
+      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic" --subject "Instance IP" --message "Instance IP: \$instance_ip" --region "ap-south-2" --message-attributes '{"email": {"DataType": "String", "StringValue": "ananth.ambekar@gmail.com"}}'
+      
+      # Send instance IP via email to User 2
+      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic" --subject "Instance IP" --message "Instance IP: \$instance_ip" --region "ap-south-2" --message-attributes '{"email": {"DataType": "String", "StringValue": "manish.ambekar63@gmail.com"}}'
+      
+      # Send instance IP via email to User 3
+      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic" --subject "Instance IP" --message "Instance IP: \$instance_ip" --region "ap-south-2" --message-attributes '{"email": {"DataType": "String", "StringValue": "manjusha.ambekar36@gmail.com"}}'
+
+      # Send instance IP via SMS to User 1
+      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic" --message "Instance IP: \$instance_ip" --region "ap-south-2" --message-attributes '{"sms": {"DataType": "String", "StringValue": "+919010548051"}}'
+      
+      # Send instance IP via SMS to User 2
+      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic" --message "Instance IP: \$instance_ip" --region "ap-south-2" --message-attributes '{"sms": {"DataType": "String", "StringValue": "+919059117245"}}'
+      
+      # Send instance IP via SMS to User 3
+      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic" --message "Instance IP: \$instance_ip" --region "ap-south-2" --message-attributes '{"sms": {"DataType": "String", "StringValue": "+916305314023"}}'
+    EOT
+  }
+}
+
+
