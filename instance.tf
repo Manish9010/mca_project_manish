@@ -91,7 +91,7 @@ resource "aws_key_pair" "deployer" {
 }
 # Create an EC2 instance
 resource "aws_instance" "my_ec2_instance" {
-  count = 1
+  count = 3
   ami           = "ami-0bd7b4edb1385fd36" # This is an example AMI ID, replace it with the AMI ID for your region
   instance_type = "t3.micro"
   key_name      = "keys" # Replace this with your key pair name
