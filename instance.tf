@@ -114,11 +114,11 @@ user_data = <<-EOF
 }
 
 output "instance_public_ip" {
-  value = aws_instance.my_ec2_instance.public_ip
+  value = aws_instance.my_ec2_instance[count.index].public_ip
 }
 
 output "administrator_password" {
-  value = rsadecrypt(aws_instance.my_ec2_instance.password_data, file("keys.pem"))
+  value = rsadecrypt(aws_instance.my_ec2_instance[count.index].password_data, file("keys.pem"))
 }
 
 /*
