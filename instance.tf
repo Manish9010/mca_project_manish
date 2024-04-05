@@ -111,7 +111,7 @@ user_data = <<-EOF
   }
 }
 
-output "instance_ips" {
+output "instance_ids" {
   value = [for instance in aws_instance.my_ec2_instance : instance.public_ip]
 }
 #-------------------------------------------------------------------
