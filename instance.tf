@@ -148,37 +148,77 @@ output "sms_topic_arn" {
 resource "null_resource" "send_instance_info" {
   count = length(aws_instance.my_ec2_instance)
 
+  triggers = {
+    instance_id = aws_instance.my_ec2_instance[count.index].id
+  }
+
   provisioner "local-exec" {
     command = <<-EOT
       instance_id=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" --query "Reservations[${count.index}].Instances[0].InstanceId" --output text)
-      instance_ip=$(aws ec2 describe-instances --instance-id "$instance_id" --query 'Reservations[0].Instances[0].PublicIpAddress' --output text) && \
-      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic" \
-        --subject "Instance IP" \
-        --message "Instance IP: $instance_ip" \
-        --region "ap-south-2" \
-        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"manish.ambekar63@gmail.com\"}}" && \
-      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic" \
-        --subject "Instance IP" \
-        --message "Instance IP: $instance_ip" \
-        --region "ap-south-2" \
-        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"manjusha.ambekar36@gmail.com\"}}" && \
-      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic" \
-        --subject "Instance IP" \
-        --message "Instance IP: $instance_ip" \
-        --region "ap-south-2" \
-        --message-attributes "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"ananth.ambekar@gmail.com\"}}" && \
-      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic" \
-        --message "Instance IP: $instance_ip" \
-        --region "ap-south-2" \
-        --message-attributes "{\"sms\": {\"DataType\": \"String\", \"StringValue\": \"+919010548051\"}}" && \
-      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic" \
-        --message "Instance IP: $instance_ip" \
-        --region "ap-south-2" \
-        --message-attributes "{\"sms\": {\"DataType\": \"String\", \"StringValue\": \"+919059117245\"}}" && \
-      aws sns publish --topic-arn "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic" \
-        --message "Instance IP: $instance_ip" \
-        --region "ap-south-2" \
-        --message-attributes "{\"sms\": {\"DataType\": \"String\", \"StringValue\": \"+916305314023\"}}"
+      instance_ip=$(aws ec2 describe-instances --instance-id "$instance_id" --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
+
+      # Send instance IP via email
+      aws_cli_args = [
+        "sns", "publish",
+        "--topic-arn", "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic",
+        "--subject", "Instance IP",
+        "--message", "Instance IP: $instance_ip",
+        "--region", "ap-south-2",
+        "--message-attributes", "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"manish.ambekar63@gmail.com\"}}"
+      ]
+      ${data.aws_cli.default.command} "${aws_cli_args[*]}"
+
+      aws_cli_args = [
+        "sns", "publish",
+        "--topic-arn", "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic",
+        "--subject", "Instance IP",
+        "--message", "Instance IP: $instance_ip",
+        "--region", "ap-south-2",
+        "--message-attributes", "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"manjusha.ambekar36@gmail.com\"}}"
+      ]
+      ${data.aws_cli.default.command} "${aws_cli_args[*]}"
+
+      aws_cli_args = [
+        "sns", "publish",
+        "--topic-arn", "arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic",
+        "--subject", "Instance IP",
+        "--message", "Instance IP: $instance_ip",
+        "--region", "ap-south-2",
+        "--message-attributes", "{\"email\": {\"DataType\": \"String\", \"StringValue\": \"ananth.ambekar@gmail.com\"}}"
+      ]
+      ${data.aws_cli.default.command} "${aws_cli_args[*]}"
+
+      # Send instance IP via SMS
+      aws_cli_args = [
+        "sns", "publish",
+        "--topic-arn", "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic",
+        "--message", "Instance IP: $instance_ip",
+        "--region", "ap-south-2",
+        "--message-attributes", "{\"sms\": {\"DataType\": \"String\", \"StringValue\": \"+919010548051\"}}"
+      ]
+      ${data.aws_cli.default.command} "${aws_cli_args[*]}"
+
+      aws_cli_args = [
+        "sns", "publish",
+        "--topic-arn", "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic",
+        "--message", "Instance IP: $instance_ip",
+        "--region", "ap-south-2",
+        "--message-attributes", "{\"sms\": {\"DataType\": \"String\", \"StringValue\": \"+919059117245\"}}"
+      ]
+      ${data.aws_cli.default.command} "${aws_cli_args[*]}"
+
+      aws_cli_args = [
+        "sns", "publish",
+        "--topic-arn", "arn:aws:sns:ap-south-2:747132195357:InstanceSMSTopic",
+        "--message", "Instance IP: $instance_ip",
+        "--region", "ap-south-2",
+        "--message-attributes", "{\"sms\": {\"DataType\": \"String\", \"StringValue\": \"+916305314023\"}}"
+      ]
+      ${data.aws_cli.default.command} "${aws_cli_args[*]}"
     EOT
   }
+}
+
+data "aws_cli" "default" {
+  depends_on = [aws_instance.my_ec2_instance]
 }
