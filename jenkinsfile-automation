@@ -29,6 +29,7 @@ pipeline {
                 //  sh 'terraform state rm aws_s3_bucket.project_bucket'
                 //  sh 'terraform import aws_s3_bucket.project_bucket mca-project-bucket'
                 //  sh 'terraform import aws_key_pair.deployer keys'
+                    sh 'chmod 777 publish_instance_ip.sh'
                     sh 'terraform plan'
                 }
             }
