@@ -2,8 +2,11 @@
 
 # Extract arguments
 instance_ip=$1
-instance_password=$2
+instance_id=$2
 recipient_email=$3
+
+# Retrieve instance password from Systems Manager Parameter Store
+instance_password=$(aws ssm get-parameter --name "/instance_passwords/$instance_id" --query "Parameter.Value" --output text)
 
 # Email subject and content
 subject="EC2 Instance Information"
