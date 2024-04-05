@@ -138,6 +138,16 @@ output "email_topic_arn" {
 
 # Create a VPC, Internet Gateway, Route Table, Subnet, Security Group, and EC2 instances (your existing configuration)
 
+
+
+# Create SNS topics
+# Define the provider and region
+provider "aws" {
+  region = "ap-south-2"
+}
+
+# Create a VPC, Internet Gateway, Route Table, Subnet, Security Group, and EC2 instances (your existing configuration)
+
 # Define email addresses
 variable "email_addresses" {
   type    = list(string)
@@ -169,13 +179,12 @@ resource "null_resource" "send_instance_ips" {
   }
 
   provisioner "local-exec" {
-    command = <<EOT
+    command = <<-EOT
       #!/bin/bash
       instance_ips=($(aws ec2 describe-instances --instance-ids ${join(" ", aws_instance.my_ec2_instance[*].id)} --query 'Reservations[*].Instances[*].PublicIpAddress' --output text))
       for ((i=0; i<${length(var.email_addresses)}; i++)); do
-        echo "IP address of instance $((i+1)): ${instance_ips[i]}" | mail -s "Instance IP" ${var.email_addresses[i]}
+        echo "IP address of instance $((i+1)): \${instance_ips[i]}" | mail -s "Instance IP" "${var.email_addresses[i]}"
       done
     EOT
   }
 }
-
