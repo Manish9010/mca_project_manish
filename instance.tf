@@ -158,7 +158,7 @@ resource "null_resource" "send_instance_ip" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      instance_ip=$(terraform output instance_ips)
+      instance_ip=$(terraform output instance_ips | sed -n ${count.index+1}p)
       
       # Send instance IP via SNS to User 1
       aws sns publish \
