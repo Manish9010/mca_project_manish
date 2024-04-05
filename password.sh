@@ -1,15 +1,6 @@
 #!/bin/bash
 
-# Get the instance IDs from Terraform
-instance_ids=$(terraform output -json instance_ids | jq -r '[]')
-
-# Check if the instance IDs array is empty
-if [ ${#instance_ids[@]} -eq 0 ]; then
-    echo "No instance IDs found in Terraform output."
-    exit 1
-fi
-# Array containing the instance IDs
-#instance_ids=("i-090d1cc887c8a5c9b" "i-0dcb9eabdaa19169d" "i-041912a89df35baaf")
+instance_ids=("i-090d1cc887c8a5c9b" "i-0dcb9eabdaa19169d" "i-041912a89df35baaf")
 
 # Path to the private key file
 private_key="keys.pem"
