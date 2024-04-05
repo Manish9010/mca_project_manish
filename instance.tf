@@ -91,13 +91,15 @@ resource "aws_key_pair" "deployer" {
 }
 # Create an EC2 instance
 resource "aws_instance" "my_ec2_instance" {
-  count = 3
+  count = 1
   ami           = "ami-0bd7b4edb1385fd36" # This is an example AMI ID, replace it with the AMI ID for your region
   instance_type = "t3.micro"
   key_name      = "keys" # Replace this with your key pair name
   subnet_id     = aws_subnet.my_subnet.id
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
   associate_public_ip_address = true # Ensure automatic public IP assignment
+
+  get_password_data = true
 /*
 user_data = <<-EOF
               <powershell>
@@ -111,9 +113,20 @@ user_data = <<-EOF
   }
 }
 
+output "instance_public_ip" {
+  value = aws_instance.my_ec2_instance.public_ip
+}
+
+output "administrator_password" {
+  value = rsadecrypt(aws_instance.my_ec2_instance.password_data, file("keys.pem"))
+}
+
+/*
 output "instance_ips" {
   value = [for instance in aws_instance.my_ec2_instance : instance.public_ip]
 }
+*/
+
 #-------------------------------------------------------------------
 # Create SNS topics
 resource "aws_sns_topic" "email_topic" {
@@ -131,12 +144,14 @@ resource "aws_sns_topic_subscription" "email_subscription" {
   endpoint  = "manishgroup.link@gmail.com"
 }
 
+/*
 # Create SMS subscription
 resource "aws_sns_topic_subscription" "sms_subscription" {
   topic_arn = aws_sns_topic.sms_topic.arn
   protocol  = "sms"
   endpoint  = "+918247359977" # Phone number to receive SMS notifications
 }
+*/
 
 # Output SNS topics ARNs
 output "email_topic_arn" {
@@ -149,62 +164,5 @@ output "sms_topic_arn" {
 
 #---------------------------------------------------------------------------------------
 
-/*
-resource "null_resource" "send_instance_ip" {
-  count = length(aws_instance.my_ec2_instance)
-
-  triggers = {
-    instance_id = aws_instance.my_ec2_instance[count.index].id
-  }
-
-  provisioner "local-exec" {
-    command = "./publish_instance_ip.sh ${count.index + 1}"
-  }
-}
-
-
-
-resource "null_resource" "send_instance_pwd" {
-  count = length(aws_instance.my_ec2_instance)
-
-  triggers = {
-    instance_id = aws_instance.my_ec2_instance[count.index].id
-  }
-
-  provisioner "local-exec" {
-    command = "./instance_password.sh ${count.index + 1}"
-  }
-}
-
-*/
-
-variable "recipient_emails" {
-  type    = list(string)
-  default = ["manish.ambekar63@gmail.com", "manjusha.ambekar36@gmail.com", "ananth.ambekar@gmail.com"]
-}
-
-resource "null_resource" "send_instance_passwords" {
-  provisioner "local-exec" {
-    command = <<-EOT
-      #!/bin/bash
-
-      KEY_PAIR_FILE="/home/ec2-user/keys.pem"
-      SNS_TOPIC_ARN="arn:aws:sns:ap-south-2:747132195357:InstanceEmailTopic"
-
-      instances=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].InstanceId' --output text)
-
-      for instance_id in $instances; do
-          password_data=$(aws ec2 get-password-data --instance-id $instance_id --priv-launch-key $KEY_PAIR_FILE)
-          password=$(echo $password_data | jq -r '.PasswordData')
-
-          aws sns publish \
-              --topic-arn "$SNS_TOPIC_ARN" \
-              --subject "RDP Password for Instance $instance_id" \
-              --message "Instance ID: $instance_id, RDP password is: $password" \
-              --region "ap-south-2"
-      done
-    EOT
-  }
-}
 
 
